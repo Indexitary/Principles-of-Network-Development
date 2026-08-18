@@ -39,3 +39,50 @@ Purpose: Retrieve cloud servers information from the REST API.
 Result: API unavailable because the REST API has not yet been implemented.
 Observed Error: Connection refused - no service running on port 5000.
 Future Development: The REST API will be implemented in lab 6 using Python and Flask.
+
+# API Troubleshooting Expected Results
+
+This section records REST API testing activities, errors identified and solutions applied.
+
+## Expected Successful API Request
+
+Resource: /home/routers/R1
+Method: GET
+Expected Status: 200 OK
+Purpose: Retrieve router information from the Network Device Management API.
+Implementation: The API will be developed during Lab 6.
+
+## 400 Bad Request
+
+Problem: Invalid JSON syntax.
+Solution: Corrected the request format.
+
+## 404 Not Found
+
+Problem: Request network device doe snot exist.
+Solution: Verified the device hostname and endpoint.
+
+## 401 Unauthorized
+
+Problem: Request attempted without valid authentication.
+Concept: API requires identity verification before allowing access.
+
+## 403 Forbidden
+
+Problem: User does not have permission to access the resource.
+Concept: Access permissions control resource availability.
+
+## 500 Internal Server Error
+
+Problem: Server-side failure.
+Solution: Investigate API service and backend systems.
+
+## API Headers
+
+Header: Content-Type: application/json
+Purpose: Defines the format of exchanged data.
+
+## Webhook Example Testing
+
+Event: Router status changed.
+Purpose: Automatically notify another system about network events.
