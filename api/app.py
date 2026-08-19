@@ -209,7 +209,6 @@ def get_home_devices():
 def get_home_routers():
     return jsonify(routers)
 
-
 @app.route('/home/laptops')
 def get_home_laptops():
     return jsonify(laptops)
@@ -250,7 +249,7 @@ def get_office_pcs():
     return jsonify(office_pcs)
 
 @app.route('/office/mobiles')
-def get_office_phones():
+def get_office_mobiles():
     return jsonify(office_mobiles)
 
 @app.route('/office/printers')
@@ -357,13 +356,13 @@ def get_specific_office_router(hostname):
 @app.route('/office/switches/<hostname>')
 def get_specific_office_switches(hostname):
 
-    for switche in switches:
+    for switch in switches:
 
-        if switche["hostname"] == hostname:
-            return jsonify(switche)
+        if switch["hostname"] == hostname:
+            return jsonify(switch)
 
     return jsonify({
-        "error": "switche not found"
+        "error": "switch not found"
     }), 404
 
 @app.route('/office/laptops/<hostname>')
@@ -391,15 +390,15 @@ def get_specific_office_pc(hostname):
     }), 404
 
 @app.route('/office/mobiles/<hostname>')
-def get_specific_office_phone(hostname):
+def get_specific_office_mobile(hostname):
 
-    for phone in office_mobiles:
+    for mobile in office_mobiles:
 
-        if phone["hostname"] == hostname:
-            return jsonify(phone)
+        if mobile["hostname"] == hostname:
+            return jsonify(mobile)
 
     return jsonify({
-        "error": "Phone not found"
+        "error": "Mobile not found"
     }), 404
 
 
