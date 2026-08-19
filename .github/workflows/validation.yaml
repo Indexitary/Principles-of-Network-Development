@@ -39,10 +39,15 @@ jobs:
             if file.endswith(".json"):
               path=os.path.join(root,file)
 
-              with open(path) as f:
-                json.load(f)
+              try:
+                with open(path) as f:
+                  json.load(f)
 
-              print("Valid JSON:", path)
+                print("Valid JSON:", path)
+
+              except Exception as e:
+                print("Invalid JSON:", path")
+                raise
         EOF
 
     - name: Validate YAML Files
