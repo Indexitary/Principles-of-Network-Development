@@ -485,5 +485,5 @@ def get_router(hostname):
         "error": "Router not found"
     }), 404
 
-if __name__ == '___main__':
+if __name__ == '__main__':
     app.run(debug=True)
