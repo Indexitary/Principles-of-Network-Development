@@ -46,7 +46,7 @@ jobs:
                 print("Valid JSON:", path)
 
               except Exception as e:
-                print("Invalid JSON:", path")
+                print("Invalid JSON:", path)
                 raise
         EOF
 
