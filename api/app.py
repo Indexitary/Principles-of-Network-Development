@@ -188,27 +188,22 @@ devices = (
     servers
 )
 
-#=========================================
-#Cloud Server Route Directory Methods
-#=========================================
+# Cloud Server Route Directory Methods
 
 @app.route('/servers')
 def get_servers():
  return jsonify(servers)
 
 
-#==================================
-#Home Route Directory Methods
-#==================================
+# Home Route Directory Methods
 
 @app.route('/home/devices')
 def get_home_devices():
 
     return jsonify(home_devices)
 
-#===============================
-#Home Route Directoty Methods
-#===============================
+
+# Home Route Directoty Methods
 
 @app.route('/home/routers')
 def get_home_routers():
@@ -231,9 +226,8 @@ def get_home_printers():
 def get_home_switches():
     return jsonify(switches)
 
-#=================================    
-#Office Route Directory Methods
-#================================= 
+   
+# Office Route Directory Methods
 
 @app.route('/office/devices')
 def get_office_devices():
@@ -263,9 +257,8 @@ def get_office_phones():
 def get_office_printers():
     return jsonify(office_printers)
 
-#==================================
+
 # Retrieve Home Specific Devices
-#==================================
 
 @app.route('/home/routers/<hostname>')
 def get_specific_home_router(hostname):
@@ -330,9 +323,8 @@ def get_specific_home_printer(hostname):
         "error": "Printer not found"
     }), 404
 
-#==================================
-#Retrieve Cloud Specific Server
-#==================================
+
+# Retrieve Cloud Specific Server
 
 @app.route('/cloud/servers/<hostname>')
 def get_specific_cloud_server(hostname):
@@ -346,9 +338,8 @@ def get_specific_cloud_server(hostname):
         "error": "Server not found"
     }), 404
 
-#=====================================
+
 # Retrieve Office Specific Devices
-#=====================================
 
 @app.route('/office/routers/<hostname>')
 def get_specific_office_router(hostname):
@@ -414,9 +405,7 @@ def get_specific_office_phone(hostname):
 
 
 
-#==========================
-#GET, POST PUT and DELETE
-#==========================
+# GET, POST PUT and DELETE
 
 @app.route('/devices', methods=['GET', 'POST'])
 def manage_devices():
@@ -437,9 +426,8 @@ def manage_devices():
          }), 201
 
 
-#==========================
+
 # PUT Method
-#==========================
 
 @app.route('/devices/<hostname>', methods=['PUT'])
 def update_device(hostname):
@@ -464,9 +452,8 @@ def update_device(hostname):
 
 
 
-#======================
+
 # Delete method
-#======================
 
 @app.route('/devices/<hostname>', methods=['DELETE'])
 def delete_device(hostname):
