@@ -2,7 +2,23 @@ from flask import Flask, jsonify, request
 import json
 import yaml
 
+import logging
+import os
+from dotenv import load_dotenv
+
 app = Flask(__name__)
+
+load_dotenv()
+USERNAME = os.getenv("API_USERNAME")
+PASSWORD = os.getenv("API_PASSWORD")
+
+print(USERNAME, PASSWORD)
+
+logging.basicConfig(
+    filename="network_api.log",
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s"
+)
 
 # Home Topology
 
@@ -188,26 +204,39 @@ devices = (
     servers
 )
 
-# Cloud Server Route Directory Methods
+#Cloud Server Route Directory Methods
+
+# @app.route('/servers')
+# def get_servers():
+#     return jsonify(servers)
+
+#Update server method for logging
 
 @app.route('/servers')
 def get_servers():
- return jsonify(servers)
+
+    logging.info("Cloud servers requested")
+
+    return jsonify(servers)
 
 
-# Home Route Directory Methods
+
+
+#Home Route Directory Methods
 
 @app.route('/home/devices')
 def get_home_devices():
 
+    logging.info("Home devices requested")
+
     return jsonify(home_devices)
 
 
-# Home Route Directoty Methods
-
+#Home Route Directoty Methods
 @app.route('/home/routers')
 def get_home_routers():
     return jsonify(routers)
+
 
 @app.route('/home/laptops')
 def get_home_laptops():
@@ -225,8 +254,8 @@ def get_home_printers():
 def get_home_switches():
     return jsonify(switches)
 
-   
-# Office Route Directory Methods
+    
+#Office Route Directory Methods 
 
 @app.route('/office/devices')
 def get_office_devices():
@@ -322,8 +351,7 @@ def get_specific_home_printer(hostname):
         "error": "Printer not found"
     }), 404
 
-
-# Retrieve Cloud Specific Server
+#Retrieve Cloud Specific Server
 
 @app.route('/cloud/servers/<hostname>')
 def get_specific_cloud_server(hostname):
@@ -337,13 +365,12 @@ def get_specific_cloud_server(hostname):
         "error": "Server not found"
     }), 404
 
-
 # Retrieve Office Specific Devices
 
 @app.route('/office/routers/<hostname>')
 def get_specific_office_router(hostname):
 
-    for router in routers:
+    for router in office_routers:
 
         if router["hostname"] == hostname:
             return jsonify(router)
@@ -356,7 +383,7 @@ def get_specific_office_router(hostname):
 @app.route('/office/switches/<hostname>')
 def get_specific_office_switches(hostname):
 
-    for switch in switches:
+    for switch in office_switches:
 
         if switch["hostname"] == hostname:
             return jsonify(switch)
@@ -402,76 +429,216 @@ def get_specific_office_mobile(hostname):
     }), 404
 
 
+#===============================
+#Part 2 add Logging Step 6
+#===========================
 
 
-# GET, POST PUT and DELETE
+#GET, POST PUT and DELETE
+
+# @app.route('/devices', methods=['GET', 'POST'])
+# def manage_devices():
+
+#     if request.method == 'GET':
+#         return jsonify(devices)
+
+
+#     if request.method == 'POST':
+
+#         new_device = request.json
+
+#         devices.append(new_device)
+
+#         return jsonify({
+#             "message": "Device added successfully",
+#             "device": new_device
+#         }), 201
+
+
+#=============================================
+# --- Updated method for GET and POST logging
+#==============================================
 
 @app.route('/devices', methods=['GET', 'POST'])
 def manage_devices():
 
     if request.method == 'GET':
-         return jsonify(devices)
+
+        logging.info("All devices requested")
+
+        return jsonify(devices)
 
 
     if request.method == 'POST':
 
-         new_device = request.json
-
-         devices.append(new_device)
-
-         return jsonify({
-             "message": "Device added successfully",
-             "device": new_device
-         }), 201
+        new_device = request.json
 
 
+        # Check JSON exists
+        if new_device is None:
 
-# PUT Method
+            logging.warning("Invalid JSON received")
+
+            return jsonify({
+                "error": "Invalid JSON data"
+            }), 400
+
+
+        # Required fields
+        required_fields = [
+            "hostname",
+            "vendor",
+            "ip_address",
+            "role"
+        ]
+
+
+        for field in required_fields:
+
+            if field not in new_device:
+
+                logging.warning(
+                    f"Missing field: {field}"
+                )
+
+                return jsonify({
+                    "error": f"{field} is required"
+                }), 400
+
+
+
+        # Add device
+
+        devices.append(new_device)
+
+
+        logging.info(
+            f"Device {new_device['hostname']} added successfully"
+        )
+
+
+        return jsonify({
+
+            "message": "Device added successfully",
+
+            "device": new_device
+
+        }), 201
+
+
+# @app.route('/devices/<hostname>', methods=['PUT'])
+# def update_device(hostname):
+
+#     updated_device = request.json
+
+#     for device in devices:
+
+#         if device["hostname"] == hostname:
+
+#             device.update(updated_device)
+
+#             return jsonify({
+#                 "message": "Device updated successfully",
+#                 "device": device
+#             }), 200
+
+
+#     return jsonify({
+#         "error": "Device not found"
+#     }), 404
+
+#==============================
+#Updated method for PUT logging
+#==============================
 
 @app.route('/devices/<hostname>', methods=['PUT'])
 def update_device(hostname):
 
-     updated_device = request.json
-
-     for device in devices:
-
-         if device["hostname"] == hostname:
-
-             device.update(updated_device)
-
-             return jsonify({
-                 "message": "Device updated successfully",
-                 "device": device
-             }), 200
+    updated_device = request.json
 
 
-     return jsonify({
-         "error": "Device not found"
-     }), 404
+    for device in devices:
+
+        if device["hostname"] == hostname:
+
+            device.update(updated_device)
 
 
+            logging.info(
+                f"Device {hostname} updated"
+            )
 
+
+            return jsonify({
+                "message": "Device updated successfully",
+                "device": device
+            }), 200
+
+
+    logging.warning(
+        f"Device {hostname} not found"
+    )
+
+
+    return jsonify({
+        "error": "Device not found"
+    }), 404
 
 # Delete method
+
+# @app.route('/devices/<hostname>', methods=['DELETE'])
+# def delete_device(hostname):
+
+#     for device in devices:
+
+#         if device["hostname"] == hostname:
+
+#             devices.remove(device)
+
+#             return jsonify({
+#                 "message": "Device deleted successfully",
+#                 "device": device
+#             }), 200
+
+
+#     return jsonify({
+#         "error": "Device not found"
+#     }), 404
+
+
+#========================
+#Updated Delete method
+#========================
 
 @app.route('/devices/<hostname>', methods=['DELETE'])
 def delete_device(hostname):
 
-     for device in devices:
+    for device in devices:
 
-         if device["hostname"] == hostname:
+        if device["hostname"] == hostname:
 
-             devices.remove(device)
-
-             return jsonify({
-                 "message": "Device deleted successfully",
-                 "device": device
-             }), 200
+            devices.remove(device)
 
 
-     return jsonify({
-         "error": "Device not found"
-     }), 404
+            logging.info(
+                f"Device {hostname} deleted"
+            )
+
+
+            return jsonify({
+                "message": "Device deleted successfully",
+                "device": device
+            }), 200
+
+
+    logging.warning(
+        f"Device {hostname} not found"
+    )
+
+
+    return jsonify({
+        "error": "Device not found"
+    }), 404
 
 
 @app.route('/routers/<hostname>')
@@ -485,5 +652,14 @@ def get_router(hostname):
         "error": "Router not found"
     }), 404
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#    app.run(debug=True)
+
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=False,
+        use_reloader=False
+    )
+
